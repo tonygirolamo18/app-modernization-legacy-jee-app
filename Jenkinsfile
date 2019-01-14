@@ -2,21 +2,25 @@
 def cloud = env.CLOUD ?: "kubernetes"
 def serviceAccount = env.SERVICE_ACCOUNT ?: "jnkns-latest-jenkins"
 def registryCredsID = env.REGISTRY_CREDENTIALS ?: "registry-credentials"
-
-// Pod Environment Variables workshop
 def namespace = env.NAMESPACE ?: "default"
-def deploymentNS = env.DEPLOYMENT_NS ?: "app-modernization-workshop"
 def registry = env.REGISTRY ?: "mycluster.icp:8500"
-def releaseName = env.RELEASE_NAME ?: "liberty-starter"
-def podLabel = "agent-" + releaseName
-def userName = currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
 
-podTemplate(label: podLabel, cloud: cloud, serviceAccount: serviceAccount, namespace: namespace, deploymentNS: deploymentNS, userName: userName, envVars: [
+// In this multiuser scenario  we derive user specific vars from the logged in Jenkins user
+def userName = currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId
+def releaseName = "liberty-starter-" + userName
+
+// This assumes the last 2 digits of the username are unique (eg user04, user05 etc)
+def userNumber = userName[-2..-1]
+def deploymentNS = "devnamespace" + userNumber
+
+def podLabel = "agent-" + releaseName
+
+
+podTemplate(label: podLabel, cloud: cloud, serviceAccount: serviceAccount, namespace: namespace, envVars: [
         envVar(key: 'NAMESPACE', value: namespace),
         envVar(key: 'DEPLOYMENT_NS', value: deploymentNS),
         envVar(key: 'REGISTRY', value: registry),
-        envVar(key: 'RELEASE_NAME', value: releaseName),
-        envVar(key: 'USER_NAME', value: userName)
+        envVar(key: 'RELEASE_NAME', value: releaseName)
     ],
     volumes: [
         hostPathVolume(hostPath: '/etc/docker/certs.d', mountPath: '/etc/docker/certs.d'),
@@ -42,7 +46,6 @@ podTemplate(label: podLabel, cloud: cloud, serviceAccount: serviceAccount, names
             stage('Build Docker Image') {
                 sh """
                 #!/bin/bash
-                echo 'username is ' ${env.USER_NAME}
                 docker build -t ${env.REGISTRY}/${env.DEPLOYMENT_NS}/liberty-starter-web:${env.BUILD_NUMBER} .
                 """
             }
