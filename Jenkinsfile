@@ -6,7 +6,7 @@ def namespace = env.NAMESPACE ?: "default"
 def registry = env.REGISTRY ?: "mycluster.icp:8500"
 
 // In this multiuser scenario  we derive user specific vars from the logged in Jenkins user
-def userName = currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId
+def userName = currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
 def releaseName = "liberty-starter-" + userName
 
 // This assumes the last 2 digits of the username are unique (eg user04, user05 etc)
