@@ -9,13 +9,14 @@ def deploymentNS = env.DEPLOYMENT_NS ?: "app-modernization-workshop"
 def registry = env.REGISTRY ?: "mycluster.icp:8500"
 def releaseName = env.RELEASE_NAME ?: "liberty-starter"
 def podLabel = "agent-" + releaseName
+def userName = currentBuild.rawBuild.getCause(Cause.UserIdCause).getUserId()
 
-
-podTemplate(label: podLabel, cloud: cloud, serviceAccount: serviceAccount, namespace: namespace, deploymentNS: deploymentNS, envVars: [
+podTemplate(label: podLabel, cloud: cloud, serviceAccount: serviceAccount, namespace: namespace, deploymentNS: deploymentNS, userName: userName, envVars: [
         envVar(key: 'NAMESPACE', value: namespace),
         envVar(key: 'DEPLOYMENT_NS', value: deploymentNS),
         envVar(key: 'REGISTRY', value: registry),
-        envVar(key: 'RELEASE_NAME', value: releaseName)
+        envVar(key: 'RELEASE_NAME', value: releaseName),
+        envVar(key: 'USER_NAME', value: userName)
     ],
     volumes: [
         hostPathVolume(hostPath: '/etc/docker/certs.d', mountPath: '/etc/docker/certs.d'),
