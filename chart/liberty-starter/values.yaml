@@ -1,0 +1,30 @@
+# Default values for liberty-starter-icp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+   derbyPort: 1527
+
+web:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: djccarew/liberty-starter
+    tag: "1.0"
+    pullPolicy: Always
+  service:
+    type: NodePort
+    internalPort: 9080
+  ingress:
+    enabled: false
+
+apache-derby:
+  enabled: true
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    internalPort: 1527
+  image:
+    repository: djccarew/derby-starter
+    tag: "0.9"
+    pullPolicy: IfNotPresent

@@ -1,0 +1,16 @@
+image:
+  repository: djccarew/liberty-starter
+  tag: "1.1"
+  pullPolicy: Always
+
+ingress:
+  enabled: false
+
+service:
+  type: NodePort
+  internalPort: 9080
+
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
