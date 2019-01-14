@@ -42,6 +42,7 @@ podTemplate(label: podLabel, cloud: cloud, serviceAccount: serviceAccount, names
             stage('Build Docker Image') {
                 sh """
                 #!/bin/bash
+                echo 'username is ' ${env.USER_NAME}
                 docker build -t ${env.REGISTRY}/${env.DEPLOYMENT_NS}/liberty-starter-web:${env.BUILD_NUMBER} .
                 """
             }
